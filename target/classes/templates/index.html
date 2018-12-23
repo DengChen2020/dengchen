@@ -1,0 +1,183 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns:th="http://thymeleaf.org">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>用户注册表单验证代码 - 源码之家</title>
+<link href="css/style.css" rel="stylesheet" type="text/css" />
+<script type='text/javascript' src='js/jquery-1.4.4.min.js'></script>
+<script language='javascript' src="js/reg.js"></script>
+</head>
+<body>
+<div class='body_main'> 
+  <!-- start main content -->
+  <div class='index_box' style='margin-top:20px;'>
+    <div style="position:fixed;color:red;margin:70px 0 0 450px;font-size:16px;Z-index:100;display:block;" id="hint"></div>
+    <div class='box_title'>
+      <div class='text_content'>
+        <h1>欢迎加入Debug(<a href="http://www.mycodes.net/" target="_blank">www.debug.net</a>)</h1>
+      </div>
+    </div>
+    <div class='box_main'>
+      <div id="register" class="register">
+        <form id="form" th:action="@{/add}" action="http://www.mycodes.net/" method="post">
+          <div id="form_submit" class="form_submit">
+            <div class="fieldset">
+            	<div class="field-group">
+                <label class="required title">昵称</label>
+                <span class="control-group" id="name_input">
+                <div class="input_add_long_background">
+                  <input class="register_input" type="text" id="name" name="name" maxLength="50" value="" onblur="changeNickName(this.value);">
+                </div>
+                </span>
+                <label class="tips">请输入您的昵称</label>
+              </div>
+              <div class="field-group">
+                <label class="required title">邮箱</label>
+                <span class="control-group" id="email_input">
+                <div class="input_add_long_background">
+                  <input class="register_input" type="text" id="email" name="email" maxLength="50" value="" onblur="__changeUserName('email');">
+                </div>
+                </span>
+                <label class="tips">请输入您常用的邮箱</label>
+              </div>
+              <div class="field-group">
+                <label class="required title">设置密码</label>
+                <span class="control-group" id="password1_input">
+                <div class="input_add_long_background">
+                  <input class="register_input" type="password" id="password1" name="password1" maxLength="20" value="" onblur="checkPwd1(this.value);" />
+                </div>
+                </span>
+                <label class="tips">请使用6~20个英文字母（区分大小写）、符号或数字</label>
+              </div>
+              <div class="field-group">
+                <label class="required title">邮箱验证码</label>
+                <span class="control-group" id="code_input">
+                <div class="input_add_background" style="margin-right:15px;">
+                  <input class="register_input_ot" type="text" id="code" name="code" max_length="6" value="" onblur="checkAuthCode(this.value);">
+                </div>
+                <input id="getcheck" type="button" value="获取验证码" onclick="getCheckCode()"/>
+                </span>
+                <label class="tips">邮箱验证码可能会进垃圾箱，如果收件箱找不到，请去垃圾箱找一下</label>
+              </div>
+            </div>
+          </div>
+          <div id="div_submit" class="div_submit">
+            <div class='div_submit_button'>
+              <input id="submit" type="submit" value="注册" class='button_button disabled'>
+            </div>
+          </div>
+        </form>
+      </div>
+<script type="text/javascript">
+function __changeUserName(of){
+  var username=$('#'+of).val();
+  if(of=='email'){
+	  if (username.search(/^[\w\.+-]+@[\w\.+-]+$/) == -1) {
+			showTooltips('email_input','请输入正确的Email地址');
+			return;
+	}					
+  }
+  else{
+	  if(username=='' || !isMobilePhone(username)) {
+		  showTooltips('mobile_input','请输入正确的手机号码');
+		  return;
+	  }
+  }
+}
+function checkPwd1(pwd1) {
+	if (pwd1.search(/^.{6,20}$/) == -1) {
+		showTooltips('password1_input','密码为空或位数太少');
+	}else {
+		hideTooltips('password1_input');
+	}
+}	
+
+function changeNickName(nickName) {
+	if (nickName == "") {
+		showTooltips('name_input','昵称不能为空');
+	}else {
+		hideTooltips('name_input');
+	}
+}
+
+function checkEmail(email) {
+	if (email.search(/^.+@.+$/) == -1) {
+		showTooltips('email_input','邮箱格式不正确');
+	}else {
+		hideTooltips('email_input');
+	}
+}
+
+function getCheckCode(){
+	$.ajax({
+		url:"hello",
+		type:"post",
+		success:function(){
+			showTooltips('code_input','发送成功，请去邮箱查收验证码');
+			return;
+		}
+	})
+}
+
+function checkAuthCode(authcode) {
+	if (authcode == '' || authcode.length != 6) {
+		showTooltips('code_input','验证码不正确');
+	}else {
+		hideTooltips('code_input');
+ }     
+}
+
+$(function(){
+	$("#form").submit(function(){
+		hideAllTooltips();
+		var ckh_result = true;
+		if ($("#name").val() == "") {
+			showTooltips('name_input','昵称不能为空');
+		}else {
+			hideTooltips('name_input');
+		}
+		if ($('#email').val() == '') {
+		showTooltips('email_input','邮箱不能为空');
+		ckh_result = false;
+	  }
+	  if ($('#password1').val() == '') {
+		showTooltips('password1_input','密码不能为空');
+		ckh_result = false;
+	  }
+	  if ($('#code').val() == '' || $('#code').val().length !=6) {
+		showTooltips('code_input','验证码不正确');
+		ckh_result = false;
+	  }else{
+		  $.ajax({
+				url:"/yzm?checkCode="+$('#code').val(),
+				type:"post",
+				async:false,
+				success:function(data){
+					if(data.result=="true"){
+						showTooltips('code_input','验证码正确');
+					}else if(data.result=="timeout"){
+						showTooltips('code_input','验证码已失效，请重新获取');
+						ckh_result = false;
+						return;
+					}else if(data.result=="false"){
+						showTooltips('code_input','验证码错误');
+						ckh_result = false;
+						return;
+					}
+				}
+			})
+	  }
+	  if ($('#verify').attr('checked') == false){
+		showTooltips('checkbox_input','对不起，您不同意Webluker的《使用协议》无法注册');
+		ckh_result = false;
+	  }
+	  return ckh_result;
+	})
+})
+</script> 
+    </div>
+    <div class='box_bottom'></div>
+  </div>
+</div>
+</body>
+</html>
